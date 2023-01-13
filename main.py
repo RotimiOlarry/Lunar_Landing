@@ -1,4 +1,5 @@
 import turtle
+import time
 import random 
 
 #Creating the game frame 
@@ -20,6 +21,9 @@ num_of_discs = 5
 disc_color = "light gray"
 centre_color = "gold"
 gear_color = "red"
+
+#Controls the lunar_model movement parameters
+rotation_step = 0.2
 
 
 stars = turtle.Turtle()
@@ -44,8 +48,17 @@ lunar_model = turtle.Turtle()
 lunar_model.penup()
 lunar_model.hideturtle()
 lunar_model.setposition(-width/3 , height/3)
+lunar_model.rotation = 0
+lunar_model.clockwise_thruster = False
+lunar_model.anticlockwise_thruster = False
 
 def draw_lunar_model():
+    lunar_model.clear()
+    #Saving the starting position and orientation
+    position = lunar_model.position()
+    heading = lunar_model.heading()
+    
+    
     lunar_model.pendown()
     lunar_model.pensize(5)
     
@@ -67,12 +80,47 @@ def draw_lunar_model():
         lunar_model.forward(branch_size)
         lunar_model.dot(branch_size/2)
         
-    #The center part of the module
+    #The centre part of the module
     lunar_model.color(centre_color)
     lunar_model.dot(branch_size)
     lunar_model.penup()
     
-draw_lunar_model()
+    #Reset the turtle to initial position and orientation
+    lunar_model.setposition(position)
+    lunar_model.setheading(heading)
+    
+def turn_on_clockwise_thruster():
+    lunar_model.clockwise_thruster = True
+    
+def turn_on_anticlockwise_thruster():
+    lunar_model.anticlockwise_thruster = True
+    
+def turn_off_clockwise_thruster():
+    lunar_model.clockwise_thruster = False
+    
 
-window.update()
+def turn_off_anticlockwise_thruster():
+    lunar_model.anticlockwise_thruster = False
+    
+window.onkeypress(turn_on_clockwise_thruster, "Right")
+window.onkeypress(turn_on_anticlockwise_thruster, "Left")
+
+window.onkeypress(turn_off_clockwise_thruster, "Right")
+window.onkeypress(turn_off_anticlockwise_thruster, "Left")
+window.listen()
+
+while True:
+    if lunar_model.clockwise_thruster:
+        lunar_model.rotation -= rotation_step
+    
+    if lunar_model.anticlockwise_thruster:
+        lunar_model.rotation += rotation_step
+    lunar_model.left(lunar_model.rotation)
+    
+    #Refresh imae of lunar model 
+    draw_lunar_model()
+    
+    time.sleep(0.05)
+    window.update()
+    
 turtle.done()
